@@ -1,0 +1,153 @@
+# Browser Agent - Örnek Promptlar
+# Bu dosya, browser agent'ı test etmek için örnek Türkçe promptlar içerir.
+
+# ==================== E-TİCARET ÖRNEKLERİ ====================
+
+# Örnek 1: Hepsiburada
+Hepsiburada'da 'laptop' ara, ilk ürüne tıkla ve fiyatı kontrol et.
+
+# Örnek 2: Trendyol
+Trendyol'da 'kulaklık' ara, fiyat filtresinden 0-500 TL seç ve ilk ürünü sepete ekle.
+
+# Örnek 3: Amazon
+Amazon Türkiye'de 'python kitap' ara ve ilk 3 sonucu ekran görüntüsü olarak kaydet.
+
+# Örnek 4: Gittigidiyor
+Gittigidiyor'da 'oyun konsolu' ara, en ucuz ürünü bul ve satıcı bilgilerini kontrol et.
+
+# Örnek 5: N11
+N11'de 'telefon kılıfı' ara, marka filtresinden Apple seç ve sonuçları doğrula.
+
+
+# ==================== ARAMA ÖRNEKLERİ ====================
+
+# Örnek 6: Google Arama
+Google'da 'Python programlama dili' ara ve ilk Wikipedia sonucuna tıkla.
+
+# Örnek 7: YouTube
+YouTube'da 'Python tutorial Türkçe' ara ve ilk videonun başlığını kaydet.
+
+# Örnek 8: Wikipedia
+Wikipedia'da 'Yapay Zeka' ara ve makale başlığının doğru olduğunu kontrol et.
+
+# Örnek 9: Google Scholar
+Google Scholar'da 'machine learning' ara ve ilk makalenin yazarlarını kontrol et.
+
+
+# ==================== SOSYAL MEDYA ÖRNEKLERİ ====================
+
+# Örnek 10: Twitter/X
+Twitter'da 'Python' ara ve trending hashtag'leri kontrol et.
+
+# Örnek 11: LinkedIn
+LinkedIn'de 'software engineer' ara ve iş ilanlarını listele.
+
+# Örnek 12: GitHub
+GitHub'da 'browser automation' ara ve en popüler repository'yi bul.
+
+
+# ==================== HABER SİTELERİ ====================
+
+# Örnek 13: Hürriyet
+Hürriyet haber sitesine git, 'teknoloji' kategorisine tıkla ve başlıkları kontrol et.
+
+# Örnek 14: BBC Turkish
+BBC Turkish'e git, ana sayfadaki ilk haberin başlığını oku ve ekran görüntüsü al.
+
+# Örnek 15: NTV
+NTV'ye git, 'ekonomi' bölümüne git ve BIST 100 değerini kontrol et.
+
+
+# ==================== EĞİTİM ÖRNEKLERİ ====================
+
+# Örnek 16: Coursera
+Coursera'da 'Python for Everybody' kursunu ara ve kurs açıklamasını oku.
+
+# Örnek 17: Udemy
+Udemy'de 'Web Development' ara ve en çok satan kursu bul.
+
+# Örnek 18: Khan Academy
+Khan Academy'ye git, 'Mathematics' kategorisine tıkla ve dersleri listele.
+
+
+# ==================== FORM DOLDURMA ÖRNEKLERİ ====================
+
+# Örnek 19: Google Forms (Basit)
+Test form'una git, isim alanına 'Ahmet Yılmaz' yaz, email alanına 'ahmet@test.com' yaz ve gönder.
+
+# Örnek 20: İletişim Formu
+Bir web sitesinin iletişim formuna git, tüm alanları doldur ve doğrula.
+
+
+# ==================== KOMBİNE ÖRNEKLERİ ====================
+
+# Örnek 21: Multi-Step
+Google'da 'Hepsiburada' ara, ilk sonuca tıkla, arama kutusuna 'mouse' yaz ve ara.
+
+# Örnek 22: Verification
+Amazon'a git, 'headphones' ara, ilk ürüne tıkla ve ürün başlığında 'Wireless' kelimesinin geçtiğini doğrula.
+
+# Örnek 23: Navigation
+Wikipedia'ya git, 'Python' ara, makaleyi aç, 'History' bölümüne scroll et ve ekran görüntüsü al.
+
+# Örnek 24: Complex Flow
+Trendyol'a git, 'erkek ayakkabı' ara, beden filtresinden 42 seç, fiyata göre sırala, ilk ürünü favorilere ekle ve doğrula.
+
+# Örnek 25: Error Handling
+Geçersiz bir URL'e gitmeyi dene, hata aldığında Google'a geri dön ve 'Python' ara.
+
+
+# ==================== KULLANIM TALİMATLARI ====================
+
+# Bu promptları kullanmak için:
+# 1. main.py dosyasını çalıştırın
+# 2. Yukarıdaki promptlardan birini kopyalayın
+# 3. CLI'a yapıştırın ve Enter'a basın
+
+# Alternatif olarak komut satırından:
+# python main.py "Google'da Python ara"
+
+# NOT: Bu örnekler temel template'lerdir. Gerçek web sitelerinin 
+# CSS selectorları ve yapısı değişebilir. LLM, dinamik olarak
+# uygun selectorları bulmaya çalışacaktır.
+
+
+# ==================== İLERİ DÜZEY ÖRNEKLERİ ====================
+
+# Örnek 26: Data Extraction
+Hava durumu sitesine git, İstanbul için hava durumunu oku ve sıcaklık değerini kontrol et.
+
+# Örnek 27: Multiple Tabs
+Google'da 'Python' ara, yeni sekmede Wikipedia'yı aç ve her iki sayfayı da doğrula.
+
+# Örnek 28: Dynamic Content
+Instagram'da '#python' hashtag'ini ara ve ilk 5 görseli kontrol et.
+
+# Örnek 29: Authentication (Dikkat: Credentials gerekir)
+LinkedIn'e giriş yap, profil sayfasına git ve ismi doğrula.
+
+# Örnek 30: File Download
+Bir dosya indirme sitesine git, 'test.pdf' dosyasını indir ve doğrula.
+
+
+# ==================== PERFORMANS TEST ÖRNEKLERİ ====================
+
+# Örnek 31: Speed Test
+10 farklı web sitesini ziyaret et ve her birinin yüklenme süresini ölç.
+
+# Örnek 32: Stress Test
+Aynı sayfayı 5 kez yenile ve her seferinde aynı elementi doğrula.
+
+# Örnek 33: Timeout Test
+Yavaş yüklenen bir siteye git, 30 saniye bekle ve sayfanın yüklendiğini doğrula.
+
+
+# ==================== DİPNOTLAR ====================
+
+# - Gerçek web sitelerinin selectorları değişebilir
+# - Bazı siteler bot tespiti kullanabilir
+# - Gemini API rate limit'ine dikkat edin
+# - Headless mode'da bazı siteler düzgün çalışmayabilir
+# - CAPTCHA olan sitelerde manuel müdahale gerekebilir
+
+# İyi testler! 🚀
