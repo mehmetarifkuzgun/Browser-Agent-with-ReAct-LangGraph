@@ -406,7 +406,7 @@ pip install -r requirements.txt
 
 **Çözüm:**
 - Prompt'u kontrol edin (`agent_logic.py` → `build_prompt()`)
-- LLM sıcaklık parametresini düşürün
+- LLM temperature parametresini düşürün
 - Gemini API limitine ulaşmış olabilirsiniz (quota kontrol edin)
 
 ### Problem: Selector bulunamıyor
@@ -432,22 +432,3 @@ ACTION: CLICK("selector")
 
 ---
 
-## 📄 Lisans
-
-Bu proje eğitim amaçlı geliştirilmiştir. Ücretsiz kullanabilir ve değiştirebilirsiniz.
-
----
-
-## 👤 Yazar
-
-Browser Agent - ReAct Pattern Implementation
-
----
-
-## 🙏 Katkıda Bulunma
-
-Pull request'ler kabul edilir. Büyük değişiklikler için lütfen önce bir issue açın.
-
----
-
-**Keyifli kodlamalar! 🚀**
