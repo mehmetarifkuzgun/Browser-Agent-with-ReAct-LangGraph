@@ -90,16 +90,6 @@ pytest -q
 - **Safety:** the agent clicks and types whatever the model decides. Don't point it at accounts or flows with real side effects (purchases, deletions).
 - Prompt and CLI text are Turkish; the model can be given English tasks too.
 
-## Changes made while preparing this repo for publication
-
-Found while building the demo and tests, and fixed:
-
-1. **Action parser broke on quoted selectors.** Arguments were split on any quote character, so `FILL("input[name='q']", "python")` — the very example in the agent's own prompt — became `FILL('input[name=', ']', 'python')`. Replaced by a quote-aware tokenizer (also supports bare `WAIT(2000)`).
-2. **Graph mode reported the wrong iteration count** (always `max_iterations`) and **ignored `DONE()`**; it also made one extra, discarded LLM call after verification passed.
-3. **Rich markup swallowed `[...]` in the report**, hiding parts of selectors in the printed trace.
-4. `.env.example` placeholder didn't match what `validate_env` checked; the check now rejects both placeholders.
-5. Dependencies pinned to versions that fail to install on current Python (`playwright==1.40.0`) → tested version ranges; added CI, tests, and an offline demo.
-
 ## License
 
 MIT — see [LICENSE](LICENSE).
