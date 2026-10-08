@@ -44,7 +44,13 @@ class BrowserAgentGraph:
             }
         )
         
-        workflow.add_edge("tools_node", "llm_node")
+        # Stop right after a tool step finished the task instead of paying for
+        # one more LLM call whose output would be thrown away.
+        workflow.add_conditional_edges(
+            "tools_node",
+            lambda state: "end" if state.get("result") is not None else "continue",
+            {"continue": "llm_node", "end": "output_node"},
+        )
         
         workflow.add_edge("output_node", END)
         
@@ -94,7 +100,14 @@ class BrowserAgentGraph:
             self.agent.history.append(observation)
             
             if action_name == "VERIFY_TEXT" and result.get("verified", False):
-                state["result"] = self.agent.evaluate_run(success=True)
+                state["result"] = self.agent.evaluate_run(
+                    success=True, iterations=state["iteration"]
+                )
+            elif action_name == "DONE" and result.get("done", False):
+                self.agent.history.append("\n✅ LLM görevi tamamlandı olarak işaretledi")
+                if state.get("result") is None:
+                    state["result"] = self.agent.evaluate_run(iterations=state["iteration"])
+                break
         
         state["messages"].append(f"TOOL: {chr(10).join(observations)}")
         
@@ -102,7 +115,7 @@ class BrowserAgentGraph:
     
     def _output_node(self, state: AgentState) -> AgentState:
         if "result" not in state or state["result"] is None:
-            state["result"] = self.agent.evaluate_run()
+            state["result"] = self.agent.evaluate_run(iterations=state["iteration"])
         
         return state
     

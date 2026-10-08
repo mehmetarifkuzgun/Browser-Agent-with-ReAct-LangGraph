@@ -26,9 +26,10 @@ wheels/
 # Environment variables
 .env
 
-# Screenshots (optional - remove if you want to commit screenshots)
+# Runtime screenshots (docs/img is the exception: README assets)
 screenshots/
 *.png
+!docs/img/*.png
 *.jpg
 *.jpeg
 
@@ -48,3 +49,5 @@ Thumbs.db
 
 # Playwright
 .playwright/
+
+.pytest_cache/

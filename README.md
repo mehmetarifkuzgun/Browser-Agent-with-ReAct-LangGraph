@@ -1,434 +1,105 @@
-# 🤖 Browser Agent
+# 🤖 Browser Agent — ReAct + LangGraph + Playwright
 
-**Python + LangGraph + Playwright** ile geliştirilmiş, Türkçe doğal dil komutlarını alıp browser otomasyonu yapan yapay zeka ajanı.
+[![CI](https://github.com/mehmetarifkuzgun/Browser-Agent-with-ReAct-LangGraph/actions/workflows/ci.yml/badge.svg)](https://github.com/mehmetarifkuzgun/Browser-Agent-with-ReAct-LangGraph/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.11%20|%203.12%20|%203.13-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## 📋 İçindekiler
+🇬🇧 English · 🇹🇷 [Türkçe](README.tr.md)
 
-- [Genel Bakış](#genel-bakış)
-- [Özellikler](#özellikler)
-- [Mimari](#mimari)
-- [Kurulum](#kurulum)
-- [Kullanım](#kullanım)
-- [ReAct Döngüsü](#react-döngüsü)
-- [LangGraph Yapısı](#langgraph-yapısı)
-- [Genişletme Önerileri](#genişletme-önerileri)
-- [Sorun Giderme](#sorun-giderme)
+A small, readable browser-automation agent. You give it a task in natural language (Turkish or English); an LLM reasons step by step (**ReAct**: *Think → Act → Observe*), drives a real Chromium through **Playwright** tools, verifies the outcome, and reports `PASSED` / `FAILED` with a full execution trace. The control loop is available both as a plain Python loop and as a **LangGraph** `StateGraph`.
 
----
+![Agent run: navigate, fill, search, screenshot, verify](docs/img/demo.gif)
 
-## 🎯 Genel Bakış
+*Real run of the agent loop in a real browser (see [Try it without an API key](#try-it-without-an-api-key) for exactly what is real and what is scripted).*
 
-Bu proje, Türkçe doğal dil promptlarını alarak web tarayıcısı üzerinde otomasyon yapan bir AI ajanıdır. **ReAct (Reasoning + Acting)** pattern'ini kullanarak, LLM'nin düşünce sürecini ve aksiyonlarını şeffaf bir şekilde takip edebilirsiniz.
+| Browser state at the end of the run | Result report printed by the CLI |
+|---|---|
+| ![Search results page](docs/img/results.png) | ![CLI result report](docs/img/terminal.png) |
 
-### Amaç
+## Why this project
 
-Kullanıcıdan aldığı doğal dil komutunu (örn. "Hepsiburada'da laptop ara ve sepete ekle") otomatik olarak browser aksiyonlarına çevirerek gerçekleştirmek.
+It is intentionally small (under 800 lines of Python) so the whole agent is easy to read end to end: prompt construction, action parsing, tool execution, stop conditions and evaluation are each one short function. It is a good starting point for experimenting with agent loops, not a production RPA framework (see [Known limitations](#known-limitations)).
 
----
-
-## ✨ Özellikler
-
-- ✅ **Türkçe doğal dil desteği**
-- ✅ **ReAct pattern** (THINK → ACTION → OBSERVATION döngüsü)
-- ✅ **LangGraph orchestration** (state graph yönetimi)
-- ✅ **Playwright browser automation**
-- ✅ **Google Gemini LLM** (free tier)
-- ✅ **Zengin CLI interface** (Rich kütüphanesi ile)
-- ✅ **Detaylı execution trace**
-- ✅ **PASSED/FAILED evaluation**
-
----
-
-## 🏗️ Mimari
-
-### Proje Yapısı
-
-```
-browser-agent/
-├── README.md              # Bu dosya
-├── requirements.txt       # Python bağımlılıkları
-├── .env.example          # Örnek environment variables
-├── main.py               # Ana CLI uygulaması
-├── tools.py              # Playwright browser tools
-├── agent_logic.py        # ReAct döngüsü + LLM wrapper
-├── langgraph_graph.py    # LangGraph state graph
-└── examples/
-    └── prompts.txt       # Örnek promptlar
-```
-
-### Katmanlar
-
-1. **main.py**: CLI interface, kullanıcı etkileşimi
-2. **langgraph_graph.py**: LangGraph ile orchestration
-3. **agent_logic.py**: ReAct döngüsü, LLM entegrasyonu
-4. **tools.py**: Playwright ile browser operasyonları
-
----
-
-## 🚀 Kurulum
-
-### 1. Gereksinimler
-
-- Python 3.9+
-- pip
-- Internet bağlantısı
-
-### 2. Repository'yi Klonlayın
-
-```bash
-cd browser-agent
-```
-
-### 3. Virtual Environment Oluşturun (Önerilen)
-
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
-
-### 4. Bağımlılıkları Kurun
-
-```powershell
-pip install -r requirements.txt
-```
-
-### 5. Playwright Chromium Kurun
-
-**ÖNEMLİ:** Playwright'ın browser binary'lerini indirmelisiniz:
-
-```powershell
-playwright install chromium
-```
-
-### 6. Environment Variables Ayarlayın
-
-```powershell
-# .env.example dosyasını .env olarak kopyalayın
-cp .env.example .env
-
-# .env dosyasını düzenleyin ve API key ekleyin
-notepad .env
-```
-
-**.env içeriği:**
-
-```env
-GEMINI_API_KEY=your_actual_api_key_here
-HEADLESS=false
-BROWSER_TIMEOUT=30000
-```
-
-**Gemini API Key nasıl alınır?**
-
-1. [Google AI Studio](https://makersuite.google.com/app/apikey) adresine gidin
-2. Google hesabınızla giriş yapın
-3. "Create API Key" butonuna tıklayın
-4. Oluşan key'i kopyalayıp `.env` dosyasına yapıştırın
-
----
-
-## 🎮 Kullanım
-
-### Temel Kullanım
-
-```powershell
-python main.py
-```
-
-Çalıştırdığınızda:
-1. Banner gösterilir
-2. Görev girmeniz istenir
-3. Mod seçimi yaparsınız (Basit ReAct / LangGraph)
-4. Agent çalışır ve sonuçları gösterir
-
-### Komut Satırından Direkt Görev Verme
-
-```powershell
-python main.py "Google'da Python ara"
-```
-
-### Örnek Çıktı
-
-```
-╔═══════════════════════════════════════════════════════╗
-║                                                       ║
-║           🤖 BROWSER AGENT 🤖                        ║
-║                                                       ║
-║        Python + LangGraph + Playwright               ║
-║        ReAct Pattern Implementation                  ║
-║                                                       ║
-╚═══════════════════════════════════════════════════════╝
-
-✅ API Key doğrulandı
-
-📝 Görev Girin:
-👉 Google'da Python ara ve ilk sonuca tıkla
-
-🚀 Agent başlatılıyor...
-
-📊 SONUÇ RAPORU
-✅ Durum: PASSED
-🔄 İterasyon: 3
-```
-
----
-
-## 🧠 ReAct Döngüsü
-
-Bu projede **ReAct (Reasoning + Acting)** pattern'i şu şekilde uygulanmıştır:
-
-### Döngü Adımları
-
-```
-1. THINK (Reasoning)
-   ↓
-   LLM mevcut durumu analiz eder ve strateji belirler
-
-2. ACTION (Acting)
-   ↓
-   LLM bir veya daha fazla action üretir:
-   - NAVIGATE("url")
-   - CLICK("selector")
-   - FILL("selector", "text")
-   - VERIFY_TEXT("selector", "expected")
-
-3. OBSERVATION (Feedback)
-   ↓
-   Her action çalıştırılır ve sonuç history'e eklenir
-
-4. THINK (Yeniden Değerlendirme)
-   ↓
-   History ile birlikte LLM'e geri döner
-   ↓
-   Döngü tekrarlanır (max 3 iterasyon)
-```
-
-### Kod Örneği
-
-```python
-# agent_logic.py içinde
-def run(self, user_task: str) -> Dict[str, Any]:
-    for iteration in range(self.max_iterations):
-        # 1. THINK - LLM'den plan al
-        llm_output = self.llm.generate(prompt)
-        
-        # 2. ACTION - Parse et
-        actions = self.parse_actions(llm_output)
-        
-        # 3. OBSERVATION - Çalıştır ve kaydet
-        for action_name, args in actions:
-            result = self.execute_action(action_name, args)
-            self.history.append(f"OBSERVATION: {result['message']}")
-        
-        # 4. History ile tekrar THINK
-```
-
-### Action Parsing
-
-LLM'den gelen çıktı şu formatta parse edilir:
-
-```
-THINK: Önce Google'a gitmem gerekiyor.
-ACTION: NAVIGATE("https://www.google.com")
-
-THINK: Arama kutusunu bulup 'Python' yazmalıyım.
-ACTION: FILL("input[name='q']", "Python")
-ACTION: PRESS_ENTER("input[name='q']")
-```
-
-Regex pattern ile ACTION satırları yakalanır ve ilgili tool fonksiyonlarına map edilir.
-
----
-
-## 📊 LangGraph Yapısı
-
-LangGraph, agent'ın state yönetimini ve akışını organize eder.
-
-### State Graph Akışı
+## Architecture
 
 ```mermaid
-graph LR
-    A[Input] --> B[LLM Node]
-    B --> C{Should Continue?}
-    C -->|Yes| D[Tools Node]
-    D --> B
-    C -->|No| E[Output Node]
-    E --> F[End]
+flowchart LR
+    U[User task] --> L["llm_node<br/>build prompt + Gemini call"]
+    L -->|"result set or max iterations"| O[output_node<br/>PASSED / FAILED + trace]
+    L -->|otherwise| T["tools_node<br/>parse ACTION lines,<br/>run Playwright tools"]
+    T -->|"VERIFY passed or DONE()"| O
+    T -->|otherwise| L
+    T -. observations appended to history .-> L
 ```
 
-### Node Açıklamaları
+| File | Responsibility |
+|---|---|
+| `main.py` | Rich CLI, env validation, runs either mode, prints the report |
+| `agent_logic.py` | `GeminiLLM` wrapper, `ReActAgent` (prompt, quote-aware action parser, action routing, plain loop, evaluation) |
+| `langgraph_graph.py` | Same loop as a LangGraph `StateGraph` (`llm_node` → `tools_node` → `output_node`) |
+| `tools.py` | `BrowserTools`: `click`, `fill`, `select`, `verify_text`, `screenshot`, `press_enter`, `navigate`, `wait` — each returns `{success, message, action}` |
+| `examples/offline_demo.py` | Deterministic, key-less demo used to produce the images above |
+| `tests/` | pytest suite (see [Tests](#tests)) |
 
-1. **LLM Node**: 
-   - LLM'den reasoning ve action planı alır
-   - State'e AIMessage olarak ekler
+**Action language** the model must emit, one `ACTION:` per turn:
+`NAVIGATE("url")`, `CLICK("selector")`, `FILL("selector", "text")`, `SELECT("selector", "value")`, `VERIFY_TEXT("selector", "expected")`, `PRESS_ENTER("selector")`, `WAIT(ms)`, `SCREENSHOT("path")`, `DONE()`.
 
-2. **Tools Node**:
-   - LLM'nin ürettiği action'ları parse eder
-   - Her action için ilgili tool'u çağırır
-   - Sonuçları FunctionMessage olarak state'e ekler
+**Stopping rules:** the run ends on `DONE()`, or as soon as a `VERIFY_TEXT` passes (graph mode; simple mode additionally requires a screenshot to have been taken), or after `max_iterations` (10 in the CLI). Status is `PASSED` only if a verification actually passed.
 
-3. **Decision Point** (`should_continue`):
-   - Max iteration'a ulaşıldı mı?
-   - Verification geçti mi?
-   - ACTION var mı?
+## Quick start
 
-4. **Output Node**:
-   - Final evaluation yapar
-   - PASSED/FAILED sonucunu döndürür
-
-### Kod Yapısı
-
-```python
-# langgraph_graph.py
-class BrowserAgentGraph:
-    def _build_graph(self):
-        workflow = Graph()
-        
-        # Node'ları ekle
-        workflow.add_node("llm_node", self._llm_node)
-        workflow.add_node("tools_node", self._tools_node)
-        workflow.add_node("output_node", self._output_node)
-        
-        # Edge'leri tanımla
-        workflow.set_entry_point("llm_node")
-        workflow.add_conditional_edges(
-            "llm_node",
-            self._should_continue,
-            {"continue": "tools_node", "end": "output_node"}
-        )
-        workflow.add_edge("tools_node", "llm_node")
-        workflow.add_edge("output_node", END)
-        
-        return workflow.compile()
-```
-
----
-
-## 🛠️ Genişletme Önerileri
-
-### 1. Multi-Modal Support
-
-Ekran görüntülerini LLM'e göndererek görsel reasoning ekleyin:
-
-```python
-# Gemini Vision API kullanarak
-def analyze_screenshot(self, image_path: str) -> str:
-    # Screenshot'u Gemini'ye gönder
-    # "Bu sayfada ne görüyorsun?" sorusunu sor
-    pass
-```
-
-### 2. Memory & Context
-
-Uzun conversation history için vector database ekleyin:
-
-```python
-from langchain.vectorstores import FAISS
-from langchain.embeddings import OpenAIEmbeddings
-
-# Önceki observation'ları semantic search ile getir
-```
-
-### 3. Error Recovery
-
-Hata durumlarında retry mekanizması:
-
-```python
-def execute_with_retry(self, action, max_retries=3):
-    for attempt in range(max_retries):
-        result = self.execute_action(action)
-        if result["success"]:
-            return result
-        # LLM'den alternative action iste
-```
-
-### 4. Parallel Actions
-
-Bağımsız action'ları paralel çalıştırın:
-
-```python
-import asyncio
-
-async def execute_actions_parallel(self, actions):
-    tasks = [self.execute_async(action) for action in actions]
-    results = await asyncio.gather(*tasks)
-    return results
-```
-
-### 5. Custom Tools
-
-Domain-specific tool'lar ekleyin:
-
-```python
-# tools.py içinde
-def extract_table_data(self, selector: str) -> Dict[str, Any]:
-    """Tablodaki verileri JSON olarak çıkar"""
-    pass
-
-def fill_form(self, form_data: dict) -> Dict[str, Any]:
-    """Form alanlarını otomatik doldur"""
-    pass
-```
-
----
-
-## 🐛 Sorun Giderme
-
-### Problem: "GEMINI_API_KEY bulunamadı"
-
-**Çözüm:**
-```powershell
-# .env dosyasını kontrol edin
-cat .env
-
-# Eğer yoksa oluşturun
-cp .env.example .env
-notepad .env
-```
-
-### Problem: "playwright._impl._api_types.Error: Executable doesn't exist"
-
-**Çözüm:**
-```powershell
-# Playwright browser'ları kurun
-playwright install chromium
-```
-
-### Problem: "ModuleNotFoundError: No module named 'langgraph'"
-
-**Çözüm:**
-```powershell
-# Bağımlılıkları yeniden kurun
+```bash
+git clone https://github.com/mehmetarifkuzgun/Browser-Agent-with-ReAct-LangGraph.git
+cd Browser-Agent-with-ReAct-LangGraph
+python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+playwright install chromium
+
+cp .env.example .env        # then put your Gemini API key in .env
+python main.py "Go to https://example.com and verify the heading says Example Domain"
 ```
 
-### Problem: LLM'den ACTION gelmiyor
+Without an argument the CLI asks for the task and lets you pick *simple ReAct loop* or *LangGraph* (default). Set `HEADLESS=true` in `.env` to hide the browser window. More prompts in [`examples/prompts.txt`](examples/prompts.txt).
 
-**Çözüm:**
-- Prompt'u kontrol edin (`agent_logic.py` → `build_prompt()`)
-- LLM temperature parametresini düşürün
-- Gemini API limitine ulaşmış olabilirsiniz (quota kontrol edin)
+## Try it without an API key
 
-### Problem: Selector bulunamıyor
-
-**Çözüm:**
-```python
-# Timeout artırın (.env)
-BROWSER_TIMEOUT=60000
-
-# Veya WAIT action kullanın
-ACTION: WAIT(2000)
-ACTION: CLICK("selector")
+```bash
+pip install -r requirements-dev.txt
+playwright install chromium
+python examples/offline_demo.py                 # both modes, prints results
+python examples/offline_demo.py --mode graph --out docs/img   # regenerate the README images
 ```
 
----
+What is **real** in this demo: the Playwright browser, the `BrowserTools`, the action parser, the agent loop / LangGraph graph, the evaluation, and the CLI report. What is **scripted**: the LLM — a `ScriptedLLM` replays a fixed sequence of `THINK/ACTION` replies, and the target is a bundled local page ([`examples/demo_site`](examples/demo_site/index.html)), not a live website. So the images show the machinery working, **not** Gemini's planning quality on real sites. The same demo runs in CI on every push.
 
-## 📚 Referanslar
+## Tests
 
-- [Playwright Docs](https://playwright.dev/python/)
-- [LangGraph Docs](https://python.langchain.com/docs/langgraph)
-- [Google Gemini API](https://ai.google.dev/docs)
-- [ReAct Paper](https://arxiv.org/abs/2210.03629)
+```bash
+pip install -r requirements-dev.txt && playwright install chromium
+pytest -q
+```
 
----
+19 tests, no API key needed: action parsing (including regression tests for selectors with inner quotes and bare `WAIT(2000)` arguments), action routing and error paths, the simple loop and the LangGraph flow with a scripted LLM and fake tools (incl. correct iteration counts, `DONE()`, and "no LLM call after the task finished"), and `BrowserTools` against the demo page in real headless Chromium (skipped automatically if no browser is installed). CI runs them on Python 3.11 / 3.12 / 3.13 plus the offline demo.
 
+## Known limitations
+
+- **No page perception.** The model never sees the DOM or a screenshot; it guesses CSS selectors from its prompt hints and its training data, and recovers only through error observations. Sites that change markup, require login, show consent walls or use bot protection will often fail. (Feeding a trimmed DOM / accessibility tree or screenshots back into the prompt is the obvious next step.)
+- **Not evaluated on live sites.** There is no benchmark here; the offline demo proves the loop, tools and graph work, not that the agent succeeds on arbitrary websites.
+- **One action per turn**, no parallel tool calls, no memory beyond the last 10 history lines in the prompt.
+- **Gemini SDK is deprecated upstream.** `google-generativeai` still works (tested 0.8.6) but prints a deprecation warning; migrating to `google-genai` is a small change confined to `GeminiLLM`.
+- **Safety:** the agent clicks and types whatever the model decides. Don't point it at accounts or flows with real side effects (purchases, deletions).
+- Prompt and CLI text are Turkish; the model can be given English tasks too.
+
+## Changes made while preparing this repo for publication
+
+Found while building the demo and tests, and fixed:
+
+1. **Action parser broke on quoted selectors.** Arguments were split on any quote character, so `FILL("input[name='q']", "python")` — the very example in the agent's own prompt — became `FILL('input[name=', ']', 'python')`. Replaced by a quote-aware tokenizer (also supports bare `WAIT(2000)`).
+2. **Graph mode reported the wrong iteration count** (always `max_iterations`) and **ignored `DONE()`**; it also made one extra, discarded LLM call after verification passed.
+3. **Rich markup swallowed `[...]` in the report**, hiding parts of selectors in the printed trace.
+4. `.env.example` placeholder didn't match what `validate_env` checked; the check now rejects both placeholders.
+5. Dependencies pinned to versions that fail to install on current Python (`playwright==1.40.0`) → tested version ranges; added CI, tests, and an offline demo.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

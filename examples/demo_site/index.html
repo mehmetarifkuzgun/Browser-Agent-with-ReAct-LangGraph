@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo Shop</title>
+<style>
+  :root { --ink:#1b2430; --muted:#5b6777; --line:#dfe5ec; --brand:#2f6fed; --bg:#f5f7fa; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--ink); background:var(--bg); }
+  header { background:#fff; border-bottom:1px solid var(--line); padding:18px 32px; display:flex; gap:24px; align-items:center; }
+  .logo { font-weight:700; font-size:20px; color:var(--brand); letter-spacing:.2px; }
+  form { flex:1; display:flex; gap:8px; max-width:640px; }
+  input[type=search] { flex:1; padding:10px 14px; border:1px solid var(--line); border-radius:8px; font-size:16px; }
+  button { padding:10px 18px; border:0; border-radius:8px; background:var(--brand); color:#fff; font-size:16px; cursor:pointer; }
+  main { max-width:900px; margin:28px auto; padding:0 32px; }
+  #summary { color:var(--muted); margin:0 0 16px; }
+  ul { list-style:none; margin:0; padding:0; display:grid; gap:12px; }
+  li { background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 20px; display:flex; justify-content:space-between; gap:16px; }
+  .title { font-weight:600; }
+  .meta { color:var(--muted); font-size:14px; }
+  .price { font-weight:700; white-space:nowrap; }
+  footer { text-align:center; color:var(--muted); font-size:13px; padding:24px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Demo Shop</div>
+  <form id="search-form" onsubmit="return false">
+    <input type="search" name="q" id="q" placeholder="Search products…" autocomplete="off">
+    <button type="button" id="search-btn">Search</button>
+  </form>
+</header>
+<main>
+  <p id="summary">Type a query and press Enter.</p>
+  <ul id="results"></ul>
+</main>
+<footer>Local test page for Browser Agent. No network access, no real shop.</footer>
+<script>
+  const PRODUCTS = [
+    {t:"Python Crash Course, 3rd Edition", a:"Eric Matthes", p:"$34.99"},
+    {t:"Fluent Python, 2nd Edition", a:"Luciano Ramalho", p:"$59.99"},
+    {t:"Python for Data Analysis, 3rd Edition", a:"Wes McKinney", p:"$54.99"},
+    {t:"Automate the Boring Stuff with Python", a:"Al Sweigart", p:"$39.99"},
+    {t:"Clean Code", a:"Robert C. Martin", p:"$44.99"},
+    {t:"Designing Data-Intensive Applications", a:"Martin Kleppmann", p:"$49.99"},
+    {t:"The Pragmatic Programmer", a:"Hunt and Thomas", p:"$42.99"}
+  ];
+  const q = document.getElementById("q");
+  function run() {
+    const term = q.value.trim().toLowerCase();
+    const words = term.split(/\s+/).filter(Boolean);
+    const hits = PRODUCTS.filter(x => words.every(w => (x.t + " " + x.a).toLowerCase().includes(w)));
+    document.getElementById("summary").textContent = hits.length + " results for “" + q.value.trim() + "”";
+    document.getElementById("results").innerHTML = hits.map(x =>
+      '<li><div><div class="title">' + x.t + '</div><div class="meta">' + x.a + '</div></div><div class="price">' + x.p + '</div></li>').join("");
+  }
+  q.addEventListener("keydown", e => { if (e.key === "Enter") run(); });
+  document.getElementById("search-btn").addEventListener("click", run);
+</script>
+</body>
+</html>

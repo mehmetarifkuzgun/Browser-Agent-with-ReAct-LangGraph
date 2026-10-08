@@ -6,6 +6,7 @@ from playwright.sync_api import sync_playwright
 from rich.console import Console
 from rich.panel import Panel
 from rich.markdown import Markdown
+from rich.text import Text
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from agent_logic import GeminiLLM, ReActAgent
@@ -35,7 +36,8 @@ def print_banner():
 def validate_env():
     api_key = os.getenv("GEMINI_API_KEY")
     
-    if not api_key or api_key == "your_gemini_api_key_here":
+    placeholders = ("your_gemini_api_key_here", "<YOUR-API-KEY-GOES-HERE>")
+    if not api_key or api_key.strip() in placeholders or api_key.startswith("your_"):
         console.print("\n❌ [bold red]HATA: GEMINI_API_KEY bulunamadı![/bold red]", style="bold red")
         console.print("\n📝 Çözüm adımları:", style="bold yellow")
         console.print("1. .env.example dosyasını kopyalayın: [cyan]cp .env.example .env[/cyan]")
@@ -130,12 +132,12 @@ def print_result(result: dict):
     console.print(f"🔄 İterasyon: [cyan]{result.get('iterations', 'N/A')}[/cyan]")
     
     console.print(f"\n💬 [bold]Açıklama:[/bold]")
-    console.print(Panel(result["message"], border_style="dim"))
+    console.print(Panel(Text(result["message"]), border_style="dim"))
     
     if result.get("execution_trace"):
         console.print(f"\n📜 [bold]Execution Trace:[/bold]")
         trace_text = "\n".join(result["execution_trace"][-20:])
-        console.print(Panel(trace_text, border_style="dim", expand=False))
+        console.print(Panel(Text(trace_text), border_style="dim", expand=False))
     
     console.print("\n" + "="*60 + "\n", style="bold blue")
 

@@ -27,6 +27,39 @@ class ReActAgent:
         self.max_iterations = max_iterations
         self.history: List[str] = []
         
+    @staticmethod
+    def _parse_args(text: str, pos: int) -> Tuple[List[str], int]:
+        """Quote-aware argument parser for ``NAME(<args>)`` starting just after '('.
+
+        Handles selectors that contain the *other* quote type (``"input[name='q']"``),
+        backslash escapes, parentheses inside quoted strings and bare arguments such
+        as ``WAIT(2000)``. Returns (args, index after the closing paren).
+        """
+        args: List[str] = []
+        i, n = pos, len(text)
+        while i < n:
+            ch = text[i]
+            if ch == ")":
+                return args, i + 1
+            if ch in "\"'":
+                quote, i, buf = ch, i + 1, []
+                while i < n and text[i] != quote:
+                    if text[i] == "\\" and i + 1 < n:
+                        i += 1
+                    buf.append(text[i])
+                    i += 1
+                args.append("".join(buf))
+                i += 1
+            elif ch in ", \t\r\n":
+                i += 1
+            else:
+                j = i
+                while j < n and text[j] not in ",)":
+                    j += 1
+                args.append(text[i:j].strip())
+                i = j
+        return args, n
+
     def parse_actions(self, llm_output: str) -> List[Tuple[str, List[str]]]:
 
         print(f"\n[DEBUG] parse_actions çağrıldı, input uzunluğu: {len(llm_output)}")
@@ -34,21 +67,10 @@ class ReActAgent:
         
         actions = []
         
-        action_pattern = r'ACTION:\s*(\w+)\((.*?)\)'
-        matches = re.finditer(action_pattern, llm_output, re.IGNORECASE)
-        
-        for match in matches:
-            action_name = match.group(1).upper()
-            args_str = match.group(2)
-            
-            args = []
-            arg_pattern = r'["\']([^"\']*)["\']'
-            arg_matches = re.finditer(arg_pattern, args_str)
-            for arg_match in arg_matches:
-                args.append(arg_match.group(1))
-            
-            actions.append((action_name, args))
-        
+        for match in re.finditer(r'ACTION:\s*(\w+)\(', llm_output, re.IGNORECASE):
+            args, _ = self._parse_args(llm_output, match.end())
+            actions.append((match.group(1).upper(), args))
+
         return actions
     
     def execute_action(self, action_name: str, args: List[str]) -> Dict[str, Any]:
